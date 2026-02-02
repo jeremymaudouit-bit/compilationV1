@@ -1,11 +1,23 @@
 import streamlit as st
-import os
-import tempfile
+import tensorflow as tf
+import tensorflow_hub as hub
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import tempfile, os
 from datetime import datetime
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Image as PDFImage, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.units import cm
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from scipy.ndimage import gaussian_filter1d
+from PIL import Image
+from fpdf import FPDF
 
-# ============================== #
+# ==============================
 # CONFIGURATION GÉNÉRALE
-# ============================== #
+# ==============================
 st.set_page_config(page_title="Plateforme Biomécanique Pro", layout="wide")
 st.title("🏃🦴 Analyse Biomécanique et Posturale Pro")
 st.sidebar.header("🔹 Choisir le type d'analyse")
@@ -20,47 +32,32 @@ analyse_type = st.sidebar.radio(
     ]
 )
 
-# ============================== #
-# IMPORTS SPÉCIFIQUES
-# ============================== #
-# GaitScan / MoveNet
+# ==============================
+# CACHE MOVE NET
+# ==============================
+@st.cache_resource
+def load_movenet():
+    return hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
+
+movenet = load_movenet()
+        import streamlit as st
 import tensorflow as tf
 import tensorflow_hub as hub
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.ndimage import gaussian_filter1d
+import tempfile, os
+from datetime import datetime
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Image as PDFImage, Spacer, Table, TableStyle
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.units import cm
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
+from scipy.ndimage import gaussian_filter1d
 
-# SpineScan 3D
-from scipy.signal import savgol_filter
-from plyfile import PlyData
-
-# Postural Photo
-from PIL import Image
-import math
-from fpdf import FPDF
-
-# ============================== #
-# CACHE MOVE NET
-# ============================== #
-@st.cache_resource
-def load_movenet_model():
-    return hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
-
-movenet = load_movenet_model()
-
-# ============================== #
-# FONCTIONS DES QUATRE MODULES
-# ============================== #
-
-def gaitscan_frontal():
-    st.subheader("🏃 GaitScan Pro - Analyse Frontale")
-    st.info("⚠️ Ici va le code complet de ton GaitScan frontal, avec sliders, plots, détection pose, PDF…")
+# ==============================
+# CONFIG
+# ==============================
 st.set_page_config(page_title="GaitScan Pro - Frontal", layout="wide")
 st.title("🏃 GaitScan Pro - Analyse Frontale")
 st.subheader("Abduction/adduction et posture frontale")
@@ -297,25 +294,41 @@ if video_ready and st.button("⚙️ Lancer l'analyse"):
         pdf_path = export_pdf({"nom": nom, "prenom": prenom}, joint_imgs, summary_table)
         with open(pdf_path, "rb") as f:
             st.download_button("📥 Télécharger le rapport PDF", f, f"Analyse_Frontale_{nom}.pdf")
+# ==============================
+# FONCTION GaitScan Frontale
+# ==============================
+def gaitscan_frontal():
+    st.subheader("🏃 GaitScan Pro - Analyse Frontale")
+    st.info("⚠️ Analyse frontale complète avec PDF et plots")
 
+    # Ici tu peux copier **tout ton code frontal existant**
+    # (le code que tu viens de me coller)
+    # Attention : décaler tout le code d'une indentation pour qu'il soit à l'intérieur de la fonction
+
+# ==============================
+# FONCTION GaitScan Sagittale
+# ==============================
 def gaitscan_sagittal():
     st.subheader("🏃 GaitScan Pro - Analyse Sagittale")
-    st.info("⚠️ Ici va le code complet de ton GaitScan sagittal, avec sliders, plots, détection pose, PDF…")
-    # Copier tout ton code GaitScan sagittal ici
+    st.info("⚠️ Ici va le code complet de ton GaitScan sagittal")
 
+# ==============================
+# FONCTION SpineScan 3D
+# ==============================
 def spinescan_3d():
     st.subheader("🦴 SpineScan Pro 3D")
-    st.info("⚠️ Ici va le code complet de ton SpineScan 3D, avec import PLY, calcul Cobb, flèches, PDF…")
-    # Copier tout ton code SpineScan 3D ici
+    st.info("⚠️ Ici va le code complet de ton SpineScan 3D")
 
+# ==============================
+# FONCTION Analyse Posturale Photo
+# ==============================
 def postural_photo():
     st.subheader("🧍 Analyseur Postural Pro - Photo")
-    st.info("⚠️ Ici va le code complet de ton Analyse Posturale Photo, avec MoveNet, angles épaules/bassin, PDF…")
-    # Copier tout ton code Analyse Posturale Photo ici
+    st.info("⚠️ Ici va le code complet de ton Analyse Posturale Photo")
 
-# ============================== #
+# ==============================
 # ROUTAGE SELON LE MENU
-# ============================== #
+# ==============================
 if analyse_type == "GaitScan Frontale":
     gaitscan_frontal()
 elif analyse_type == "GaitScan Sagittale":
