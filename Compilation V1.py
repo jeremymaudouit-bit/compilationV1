@@ -28,18 +28,37 @@ apps = [
     },
 ]
 
-# Affichage en grille (2 colonnes)
+# Affichage en grille 2 colonnes
 cols = st.columns(2)
 for idx, app in enumerate(apps):
     col = cols[idx % 2]
     with col:
         st.markdown(
             f"""
-            <div style="border:2px solid #4CAF50; border-radius:15px; padding:20px; text-align:center; background-color:#f9f9f9; margin-bottom:20px;">
-                <img src="{app['logo']}" width="80px" style="margin-bottom:10px;"><br>
-                <h3>{app['nom']}</h3>
+            <div style="
+                border:2px solid #4CAF50; 
+                border-radius:15px; 
+                padding:20px; 
+                text-align:center; 
+                background-color:#f9f9f9; 
+                margin-bottom:20px;
+                transition: transform 0.2s;
+            "
+            onmouseover="this.style.transform='scale(1.05)'" 
+            onmouseout="this.style.transform='scale(1)'">
+                <img src="{app['logo']}" width="80px" style="margin-bottom:15px;"><br>
+                <h3 style="color:#333; font-weight:bold;">{app['nom']}</h3>
                 <a href="{app['url']}" target="_blank">
-                    <button style="background-color:#4CAF50;color:white;padding:10px 20px;border:none;border-radius:10px;cursor:pointer;">Ouvrir</button>
+                    <button style="
+                        background-color:#4CAF50;
+                        color:white;
+                        padding:10px 20px;
+                        border:none;
+                        border-radius:10px;
+                        cursor:pointer;
+                        font-size:16px;
+                        margin-top:10px;
+                    ">Ouvrir</button>
                 </a>
             </div>
             """,
