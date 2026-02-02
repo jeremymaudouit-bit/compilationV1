@@ -40,7 +40,18 @@ def load_movenet():
     return hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
 
 movenet = load_movenet()
-        import streamlit as st
+
+# ==============================
+# FONCTION GaitScan Frontale
+# ==============================
+def gaitscan_frontal():
+    st.subheader("🏃 GaitScan Pro - Analyse Frontale")
+    st.info("⚠️ Analyse frontale complète avec PDF et plots")
+
+    # Ici tu peux copier **tout ton code frontal existant**
+    # (le code que tu viens de me coller)
+    # Attention : décaler tout le code d'une indentation pour qu'il soit à l'intérieur de la fonction
+    import streamlit as st
 import tensorflow as tf
 import tensorflow_hub as hub
 import cv2
@@ -294,16 +305,6 @@ if video_ready and st.button("⚙️ Lancer l'analyse"):
         pdf_path = export_pdf({"nom": nom, "prenom": prenom}, joint_imgs, summary_table)
         with open(pdf_path, "rb") as f:
             st.download_button("📥 Télécharger le rapport PDF", f, f"Analyse_Frontale_{nom}.pdf")
-# ==============================
-# FONCTION GaitScan Frontale
-# ==============================
-def gaitscan_frontal():
-    st.subheader("🏃 GaitScan Pro - Analyse Frontale")
-    st.info("⚠️ Analyse frontale complète avec PDF et plots")
-
-    # Ici tu peux copier **tout ton code frontal existant**
-    # (le code que tu viens de me coller)
-    # Attention : décaler tout le code d'une indentation pour qu'il soit à l'intérieur de la fonction
 
 # ==============================
 # FONCTION GaitScan Sagittale
