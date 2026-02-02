@@ -4,7 +4,7 @@ import tempfile
 from datetime import datetime
 
 # ============================== #
-# MENU DE SÉLECTION DE L'ANALYSE #
+# CONFIGURATION GÉNÉRALE
 # ============================== #
 st.set_page_config(page_title="Plateforme Biomécanique Pro", layout="wide")
 st.title("🏃🦴 Analyse Biomécanique et Posturale Pro")
@@ -21,7 +21,7 @@ analyse_type = st.sidebar.radio(
 )
 
 # ============================== #
-# IMPORTS SPÉCIFIQUES (selon analyse)
+# IMPORTS SPÉCIFIQUES
 # ============================== #
 # GaitScan / MoveNet
 import tensorflow as tf
@@ -46,18 +46,22 @@ import math
 from fpdf import FPDF
 
 # ============================== #
-# FONCTION GENERIQUE DE CACHAGE #
+# CACHE MOVE NET
 # ============================== #
 @st.cache_resource
 def load_movenet_model():
     return hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
 
+movenet = load_movenet_model()
+
 # ============================== #
-# GaitScan Frontale
+# FONCTIONS DES QUATRE MODULES
 # ============================== #
+
 def gaitscan_frontal():
     st.subheader("🏃 GaitScan Pro - Analyse Frontale")
-  st.set_page_config(page_title="GaitScan Pro - Frontal", layout="wide")
+    st.info("⚠️ Ici va le code complet de ton GaitScan frontal, avec sliders, plots, détection pose, PDF…")
+st.set_page_config(page_title="GaitScan Pro - Frontal", layout="wide")
 st.title("🏃 GaitScan Pro - Analyse Frontale")
 st.subheader("Abduction/adduction et posture frontale")
 
@@ -293,31 +297,24 @@ if video_ready and st.button("⚙️ Lancer l'analyse"):
         pdf_path = export_pdf({"nom": nom, "prenom": prenom}, joint_imgs, summary_table)
         with open(pdf_path, "rb") as f:
             st.download_button("📥 Télécharger le rapport PDF", f, f"Analyse_Frontale_{nom}.pdf")
-    st.info("⚠️ Ici va le code de ton GaitScan Frontal complet.")
 
-# ============================== #
-# GaitScan Sagittale
-# ============================== #
 def gaitscan_sagittal():
     st.subheader("🏃 GaitScan Pro - Analyse Sagittale")
-    st.info("⚠️ Ici va le code de ton GaitScan Sagittal complet.")
+    st.info("⚠️ Ici va le code complet de ton GaitScan sagittal, avec sliders, plots, détection pose, PDF…")
+    # Copier tout ton code GaitScan sagittal ici
 
-# ============================== #
-# SpineScan 3D
-# ============================== #
 def spinescan_3d():
     st.subheader("🦴 SpineScan Pro 3D")
-    st.info("⚠️ Ici va le code de ton SpineScan Pro complet.")
+    st.info("⚠️ Ici va le code complet de ton SpineScan 3D, avec import PLY, calcul Cobb, flèches, PDF…")
+    # Copier tout ton code SpineScan 3D ici
 
-# ============================== #
-# Postural Photo
-# ============================== #
 def postural_photo():
     st.subheader("🧍 Analyseur Postural Pro - Photo")
-    st.info("⚠️ Ici va le code de ton Analyse Posturale Photo complet.")
+    st.info("⚠️ Ici va le code complet de ton Analyse Posturale Photo, avec MoveNet, angles épaules/bassin, PDF…")
+    # Copier tout ton code Analyse Posturale Photo ici
 
 # ============================== #
-# LOGIQUE DE ROUTAGE
+# ROUTAGE SELON LE MENU
 # ============================== #
 if analyse_type == "GaitScan Frontale":
     gaitscan_frontal()
