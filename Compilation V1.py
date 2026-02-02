@@ -34,6 +34,7 @@ st.divider()
 # PARTIE 2/4 – GAITSCAN FRONTAL COMPLET
 # =========================================================
 
+# --------------------- PARTIE 2 : ANALYSE FRONTALE ---------------------
 def run_gaitscan_frontal():
 
     import streamlit as st
@@ -47,7 +48,7 @@ def run_gaitscan_frontal():
     from datetime import datetime
 
     from reportlab.platypus import (
-        SimpleDocTemplate, Paragraph, Spacer, Image as PDFImage, Table, TableStyle
+        SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
     )
     from reportlab.lib.styles import getSampleStyleSheet
     from reportlab.lib.pagesizes import A4
@@ -55,11 +56,9 @@ def run_gaitscan_frontal():
     from reportlab.lib import colors
 
     st.header("🏃 GaitScan Pro – Analyse Frontale")
-    st.caption("Valgus / varus – abduction / adduction – bassin – tronc")
+    st.caption("Analyse des angles : tronc, bassin, hanche, genou, cheville")
 
-    # -----------------------------------------------------
-    # MODELE MOVENET
-    # -----------------------------------------------------
+    # ------------------- MODELE MOVENET -------------------
     @st.cache_resource
     def load_movenet():
         return hub.load("https://tfhub.dev/google/movenet/singlepose/lightning/4")
@@ -85,9 +84,7 @@ def run_gaitscan_frontal():
         cos = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc) + 1e-6)
         return np.degrees(np.arccos(np.clip(cos, -1.0, 1.0)))
 
-    # -----------------------------------------------------
-    # UI
-    # -----------------------------------------------------
+    # ------------------- INTERFACE -------------------
     video = st.file_uploader("Vidéo frontale (.mp4, .avi, .mov)", type=["mp4", "avi", "mov"])
     smooth = st.slider("Lissage temporel", 0, 10, 2)
 
@@ -98,17 +95,17 @@ def run_gaitscan_frontal():
     if not st.button("⚙️ Lancer l’analyse"):
         return
 
-    # -----------------------------------------------------
-    # TRAITEMENT VIDEO
-    # -----------------------------------------------------
+    # ------------------- TRAITEMENT VIDEO -------------------
     tmp = tempfile.NamedTemporaryFile(delete=False)
     tmp.write(video.read())
 
     cap = cv2.VideoCapture(tmp.name)
 
-    pelvis_angles = []
+    # Listes pour tous les angles
+    pelvis_angles, trunk_angles = [], []
     knee_L, knee_R = [], []
-    trunk_angles = []
+    hip_L, hip_R = [], []
+    ankle_L, ankle_R = [], []
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -126,95 +123,65 @@ def run_gaitscan_frontal():
         LS = kp[KEYPOINTS["left_shoulder"], :2]
         RS = kp[KEYPOINTS["right_shoulder"], :2]
 
+        # ----------------- CALCUL ANGLES -----------------
         pelvis = np.degrees(np.arctan2(RH[1] - LH[1], RH[0] - LH[0]))
         trunk = np.degrees(np.arctan2(RS[1] - LS[1], RS[0] - LS[0]))
-
         knee_left = angle(LH, LK, LA)
         knee_right = angle(RH, RK, RA)
 
+        # Hanche frontal (abduction/adduction)
+        hip_left = angle(LS, LH, LK)
+        hip_right = angle(RS, RH, RK)
+
+        # Cheville frontal (valgus/varus)
+        foot_L = LA + np.array([1.0, 0.0])
+        foot_R = RA + np.array([1.0, 0.0])
+        ankle_left = angle(LK, LA, foot_L)
+        ankle_right = angle(RK, RA, foot_R)
+
+        # Stockage
         pelvis_angles.append(pelvis)
         trunk_angles.append(trunk)
         knee_L.append(knee_left)
         knee_R.append(knee_right)
+        hip_L.append(hip_left)
+        hip_R.append(hip_right)
+        ankle_L.append(ankle_left)
+        ankle_R.append(ankle_right)
 
     cap.release()
     os.unlink(tmp.name)
 
-    # -----------------------------------------------------
-    # LISSAGE
-    # -----------------------------------------------------
+    # ------------------- LISSAGE -------------------
     pelvis_angles = gaussian_filter1d(pelvis_angles, sigma=smooth)
     trunk_angles = gaussian_filter1d(trunk_angles, sigma=smooth)
     knee_L = gaussian_filter1d(knee_L, sigma=smooth)
     knee_R = gaussian_filter1d(knee_R, sigma=smooth)
+    hip_L = gaussian_filter1d(hip_L, sigma=smooth)
+    hip_R = gaussian_filter1d(hip_R, sigma=smooth)
+    ankle_L = gaussian_filter1d(ankle_L, sigma=smooth)
+    ankle_R = gaussian_filter1d(ankle_R, sigma=smooth)
 
-    # -----------------------------------------------------
-    # AFFICHAGE
-    # -----------------------------------------------------
-    col1, col2 = st.columns(2)
+    # ------------------- AFFICHAGE GRAPHIQUE -------------------
+    st.subheader("📊 Angles frontaux")
 
-    with col1:
-        fig, ax = plt.subplots()
-        ax.plot(pelvis_angles, label="Bassin")
-        ax.plot(trunk_angles, label="Tronc")
-        ax.set_title("Angles frontaux (°)")
-        ax.legend()
-        st.pyplot(fig)
+    fig, ax = plt.subplots()
+    ax.plot(trunk_angles, label="Tronc")
+    ax.plot(pelvis_angles, label="Bassin")
+    ax.plot(hip_L, label="Hanche G")
+    ax.plot(hip_R, label="Hanche D")
+    ax.plot(knee_L, label="Genou G")
+    ax.plot(knee_R, label="Genou D")
+    ax.plot(ankle_L, label="Cheville G")
+    ax.plot(ankle_R, label="Cheville D")
+    ax.set_title("Analyse frontale – Tronc/Bassin/Hanche/Genou/Cheville (°)")
+    ax.legend()
+    st.pyplot(fig)
 
-    with col2:
-        fig, ax = plt.subplots()
-        ax.plot(knee_L, label="Genou gauche")
-        ax.plot(knee_R, label="Genou droit")
-        ax.set_title("Valgus / Varus genoux (°)")
-        ax.legend()
-        st.pyplot(fig)
+    # ------------------- INITIALISATION PDF -------------------
+    if "pdf_frontal" not in st.session_state:
+        st.session_state.pdf_frontal = None
 
-    # -----------------------------------------------------
-    # EXPORT PDF
-    # -----------------------------------------------------
-    st.divider()
-    st.subheader("📄 Export PDF")
-
-    if st.button("📥 Générer le rapport PDF"):
-
-        pdf_path = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf").name
-        doc = SimpleDocTemplate(pdf_path, pagesize=A4)
-        styles = getSampleStyleSheet()
-        story = []
-
-        story.append(Paragraph("<b>GaitScan – Analyse Frontale</b>", styles["Title"]))
-        story.append(Spacer(1, 0.5 * cm))
-
-        story.append(Paragraph(
-            f"Date : {datetime.now().strftime('%d/%m/%Y %H:%M')}",
-            styles["Normal"]
-        ))
-        story.append(Spacer(1, 0.5 * cm))
-
-        table_data = [
-            ["Mesure", "Moyenne (°)"],
-            ["Bascule bassin", f"{np.mean(pelvis_angles):.2f}"],
-            ["Inclinaison tronc", f"{np.mean(trunk_angles):.2f}"],
-            ["Genou gauche", f"{np.mean(knee_L):.2f}"],
-            ["Genou droit", f"{np.mean(knee_R):.2f}"],
-        ]
-
-        table = Table(table_data, colWidths=[7 * cm, 4 * cm])
-        table.setStyle(TableStyle([
-            ("BACKGROUND", (0, 0), (-1, 0), colors.lightgrey),
-            ("GRID", (0, 0), (-1, -1), 0.5, colors.grey),
-        ]))
-
-        story.append(table)
-        doc.build(story)
-
-        with open(pdf_path, "rb") as f:
-            st.download_button(
-                "⬇️ Télécharger le PDF",
-                f,
-                file_name="gaitscan_frontal.pdf",
-                mime="application/pdf"
-            )
 # =========================================================
 # PARTIE 3/4 – GAITSCAN CINÉMATIQUE COMPLET
 # =========================================================
@@ -624,3 +591,4 @@ elif APP_MODE == "🦴 SpineScan Pro 3D":
 
 elif APP_MODE == "🧍 Analyse Posturale (Photo)":
     run_posture_photo()
+
