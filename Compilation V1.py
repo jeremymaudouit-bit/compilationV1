@@ -29,20 +29,7 @@ with st.sidebar:
 
 st.divider()
 
-# =========================================================
-# ROUTEUR (les fonctions sont définies plus bas)
-# =========================================================
-if APP_MODE == "🏃 GaitScan – Analyse Frontale":
-    run_gaitscan_frontal()
 
-elif APP_MODE == "🏃 GaitScan – Analyse Cinématique":
-    run_gaitscan_cinematique()
-
-elif APP_MODE == "🦴 SpineScan Pro 3D":
-    run_spinescan_3d()
-
-elif APP_MODE == "🧍 Analyse Posturale (Photo)":
-    run_posture_photo()
 # =========================================================
 # PARTIE 2/4 – GAITSCAN FRONTAL COMPLET
 # =========================================================
@@ -621,3 +608,19 @@ def run_posture_photo():
                 file_name="analyse_posturale.pdf",
                 mime="application/pdf"
             )
+
+# =========================================================
+# ROUTEUR FINAL (APRES TOUTES LES DEFINITIONS)
+# =========================================================
+
+if APP_MODE == "🏃 GaitScan – Analyse Frontale":
+    run_gaitscan_frontal()
+
+elif APP_MODE == "🏃 GaitScan – Analyse Cinématique":
+    run_gaitscan_cinematique()
+
+elif APP_MODE == "🦴 SpineScan Pro 3D":
+    run_spinescan_3d()
+
+elif APP_MODE == "🧍 Analyse Posturale (Photo)":
+    run_posture_photo()
