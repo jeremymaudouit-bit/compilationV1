@@ -8,7 +8,7 @@ st.subheader("Choisissez le type d'analyse")
 apps = [
     {
         "nom": "Analyse de la marche vidéo latérale",
-        "url": "https://marchewebv1-eupkpw6fkeua5zuzjni6p5.streamlit.app/",
+        "url": "https://marchewebv2-ghtjzszkohdbcm4mdvstcf.streamlit.app/",
         "logo": "https://img.icons8.com/color/96/000000/walking.png"
     },
     {
@@ -64,3 +64,4 @@ for idx, app in enumerate(apps):
             """,
             unsafe_allow_html=True
         )
+
