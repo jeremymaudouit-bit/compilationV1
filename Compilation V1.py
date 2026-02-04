@@ -13,7 +13,7 @@ apps = [
     },
     {
         "nom": "Analyse du dos via scan 3D",
-        "url": "https://scandosv1-rxlsw3f33usvhgj7hrrbmb.streamlit.app/",
+        "url": "https://posturewebv3-85bhxf23ejequnmrhnqypl.streamlit.app/",
         "logo": "https://img.icons8.com/color/96/000000/back.png"
     },
     {
@@ -64,5 +64,6 @@ for idx, app in enumerate(apps):
             """,
             unsafe_allow_html=True
         )
+
 
 
