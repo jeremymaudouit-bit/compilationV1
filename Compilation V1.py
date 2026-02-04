@@ -13,12 +13,12 @@ apps = [
     },
     {
         "nom": "Analyse du dos via scan 3D",
-        "url": "https://posturewebv3-85bhxf23ejequnmrhnqypl.streamlit.app/",
+        "url": "https://scandosv1-rxlsw3f33usvhgj7hrrbmb.streamlit.app/",
         "logo": "https://img.icons8.com/color/96/000000/back.png"
     },
     {
         "nom": "Analyse de la posture photo de dos",
-        "url": "https://marchewebv1-eupkpw6fkeua5zuzjni6p5.streamlit.app/",
+        "url": "https://posturewebv3-85bhxf23ejequnmrhnqypl.streamlit.app/",
         "logo": "https://img.icons8.com/color/96/000000/photo-camera.png"
     },
     {
@@ -64,6 +64,7 @@ for idx, app in enumerate(apps):
             """,
             unsafe_allow_html=True
         )
+
 
 
 
