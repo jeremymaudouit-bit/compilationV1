@@ -19,7 +19,7 @@ apps = [
     {
         "nom": "Analyse de la posture photo de dos",
         "url": "https://posturewebv3-85bhxf23ejequnmrhnqypl.streamlit.app/",
-        "logo": "https://img.icons8.com/color/96/000000/back.png"
+        "logo": "https://img.icons8.com/color/96/000000/walking.png"
     },
     {
         "nom": "Analyse de la marche vidéo de face",
@@ -64,6 +64,7 @@ for idx, app in enumerate(apps):
             """,
             unsafe_allow_html=True
         )
+
 
 
 
