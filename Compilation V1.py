@@ -7,7 +7,7 @@ st.subheader("Choisissez le type d'analyse")
 # Définition des applications
 apps = [
     {
-        "nom": "Analyse de la marche vidéo latérale",
+        "nom": "Analyse de la marche / course vidéo latérale",
         "url": "https://marchewebv2-ghtjzszkohdbcm4mdvstcf.streamlit.app/",
         "logo": "https://img.icons8.com/color/96/000000/running.png"
     },
@@ -17,9 +17,9 @@ apps = [
         "logo": "https://img.icons8.com/color/96/000000/back.png"
     },
     {
-        "nom": "Analyse de la posture photo de dos",
+        "nom": "Analyse de la posture de dos",
         "url": "https://posturewebv3-85bhxf23ejequnmrhnqypl.streamlit.app/",
-        "logo": "https://img.icons8.com/color/96/000000/walking.png"
+        "logo": "https://img.icons8.com/color/96/standing-man.png"
     },
     {
         "nom": "Analyse de la marche vidéo de face",
@@ -64,6 +64,7 @@ for idx, app in enumerate(apps):
             """,
             unsafe_allow_html=True
         )
+
 
 
 
